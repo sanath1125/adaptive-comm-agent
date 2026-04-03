@@ -1,0 +1,29 @@
+# OpenEnv Specification v1.0
+name: "adaptive_comm_agent"
+version: "1.0.0"
+description: "A real-world simulation evaluating an agent's ability to decide when to translate or interpret informal communication."
+entry_point: "server.app:app"
+sdk: "docker"
+
+# Task Definitions for the Grader
+tasks:
+  - id: "easy"
+    name: "Standard English Check"
+    description: "Agent must identify that formal English requires no action (Action 0)."
+    difficulty: "easy"
+  - id: "medium"
+    name: "Spanish Translation"
+    description: "Agent must identify that Spanish text requires translation (Action 1)."
+    difficulty: "medium"
+  - id: "hard"
+    name: "Slang Interpretation"
+    description: "Agent must identify that Gen-Z slang requires interpretation (Action 1)."
+    difficulty: "hard"
+
+# Environment Constraints
+observation_space:
+  type: "text"
+  description: "A message string and a task_id."
+action_space:
+  type: "discrete"
+  description: "0: Pass, 1: Translate/Interpret, 2: Summarize"
