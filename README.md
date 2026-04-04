@@ -1,24 +1,31 @@
-# Adaptive Communication Agent (OpenEnv) 🚀
+---
+title: Adaptive Comm Agent
+emoji: 🤖
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+# Adaptive Communication AI Agent 🤖
 
-A high-fidelity simulation environment for evaluating an LLM agent's ability to navigate complex, non-standard human communication. 
+This project is a submission for **Round 1**. It features an AI Agent capable of dynamically switching communication styles based on user input.
 
-## 🌟 The Problem & Real-World Utility
-In modern global communication, users often face "Language Friction." This environment models a **Communication Middleware Layer** that decides when to trigger expensive translation or interpretation services. 
-- **Business Use-Case:** Reducing API costs for customer support platforms by filtering standard text while catching nuanced slang and foreign languages.
+## 🚀 Overview
+The system consists of a **Brain (Agent)** and a **Judge (Environment)**:
+- **Agent:** Powered by `Llama-3.1-8B-Instruct` via the Hugging Face Inference Router.
+- **Environment:** A FastAPI-based server that evaluates the Agent's decisions.
 
-## 🏗️ Environment Architecture (OpenEnv Spec)
-This project implements the full **OpenEnv** interface with typed Pydantic models for predictable, scalable agent interaction.
+## 🧠 Decision Logic
+The Agent classifies incoming messages into two categories:
+1. **Action 0 (Standard):** Formal or standard English communication.
+2. **Action 1 (Adaptive):** Foreign languages (e.g., Spanish) or modern Slang (e.g., "no cap", "mid").
 
-### 1. Task Hierarchy (Easy → Hard)
-- **Task 1 (Easy):** "Standard English Check." Validates that the agent doesn't over-process simple data. (Target: Pass)
-- **Task 2 (Medium):** "Cross-Lingual Intent." Detects Spanish text requiring active translation. (Target: Translate)
-- **Task 3 (Hard):** "Sociolinguistic Nuance." Interprets Gen-Z slang ("mid", "no cap", "bounce") which standard dictionaries often fail to process correctly. (Target: Interpret)
+## 🛠️ Technical Stack
+- **Language:** Python 3.11
+- **Framework:** FastAPI / Uvicorn
+- **AI Model:** Meta Llama 3.1 8B
+- **Deployment:** Dockerized container on Hugging Face Spaces
 
-### 2. The Reward Function
-The environment uses a **deterministic grader** that provides a `1.0` reward for perfect intent alignment and `0.0` for failure. This creates a clear signal for Reinforcement Learning (RL) agents to learn the boundary between standard and non-standard text.
-
-## 🚀 Technical Setup
-### Local Execution
-1. **Build Container:**
-   ```bash
-   docker build -t adaptive-comm-agent .
+## ✅ Evaluation Results
+- **Local Test Score:** 3.0/3.0
+- **Test Cases:** Formal English (Pass), Spanish (Pass), Gen-Z Slang (Pass).
