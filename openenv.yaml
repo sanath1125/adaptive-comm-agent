@@ -2,7 +2,7 @@
 name: "adaptive_comm_agent"
 version: "1.0.0"
 description: "A real-world simulation evaluating an agent's ability to decide when to translate or interpret informal communication."
-entry_point: "server.app:app"
+entry_point: "app:app"
 sdk: "docker"
 
 # Task Definitions for the Grader
