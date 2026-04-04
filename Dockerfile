@@ -1,17 +1,13 @@
-# Use Python 3.11 for stability
-FROM python:3.11-slim
+FROM python:3.11
 
-# Set the working directory
 WORKDIR /app
 
-# Copy all files into the container
+# Copy requirements and install them
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of your code
 COPY . .
 
-# Install dependencies
-RUN pip install --no-cache-dir fastapi uvicorn pydantic requests openai python-dotenv
-
-# Expose the port Hugging Face expects
-EXPOSE 7860
-
-# Run the server using the module path
+# Start the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
