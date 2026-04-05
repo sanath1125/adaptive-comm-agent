@@ -16,18 +16,10 @@ dependencies = [
     "python-dotenv",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "pytest>=8.0.0",
-    "pytest-cov>=4.0.0",
-]
-
 [project.scripts]
-# UPDATED: Changed from adaptive_comm_agent.server.app to just app
-server = "app:main"
+# This tells the validator exactly where the main function is
+server = "server.app:main"
 
 [tool.setuptools]
-include-package-data = true
-# UPDATED: Removed the sub-package directory requirements
-packages = ["."]
 package-dir = { "" = "." }
+packages = ["server"]
