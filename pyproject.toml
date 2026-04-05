@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-# This tells the validator exactly where the main function is
+# This line maps the 'server' command to the main() function in app.py
 server = "server.app:main"
 
 [tool.setuptools]
