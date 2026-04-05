@@ -1,13 +1,16 @@
-FROM python:3.11
+FROM python:3.10-slim
 
 WORKDIR /app
 
-# Copy requirements and install them
-COPY requirements.txt .
+# Copy requirements from the server folder
+COPY server/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of your code
+# Copy everything into the container
 COPY . .
 
-# Start the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "7860"]
+# Expose the Hugging Face port
+EXPOSE 7860
+
+# Run uvicorn pointing to the server folder
+CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "7860"]
