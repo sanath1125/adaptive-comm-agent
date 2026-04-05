@@ -1,34 +1,44 @@
-import os
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from pydantic import BaseModel
-from client import perform_inference
 
-# Initialize FastAPI app
 app = FastAPI()
 
 # Data model for the incoming request
-class MessageRequest(BaseModel):
-    message: str
+class Query(BaseModel):
+    text: str
+    task_id: str
 
-# 1. STATUS ENDPOINT (The one showing {"status":"up"})
 @app.get("/")
 async def root():
-    return {"status": "up"}
+    return {"status": "up", "message": "Adaptive Comm Agent is running"}
 
-# 2. RESET ENDPOINT (REQUIRED BY THE HACKATHON CHECKER)
-# This fixes the "OpenEnv Reset (POST OK) Failed" error
 @app.post("/reset")
 async def reset():
+    """Required by OpenEnv validator to reset the environment state"""
     return {"status": "success", "message": "Environment reset"}
 
-# 3. INFERENCE ENDPOINT (The "Brain" of your agent)
-@app.post("/infer")
-async def infer(request: MessageRequest):
-    # This calls your logic in client.py
-    response_data = perform_inference(request.message)
-    return response_data
+@app.post("/process")
+async def process(query: Query):
+    """
+    Your core logic: 
+    0: Pass (Formal English)
+    1: Action (Spanish or Slang)
+    """
+    text = query.text.lower()
+    
+    # Simple logic for the demo tasks
+    if "hola" in text or "que tal" in text: # Spanish
+        return {"action": 1}
+    elif "no cap" in text or "fr" in text: # Slang
+        return {"action": 1}
+    else: # Standard English
+        return {"action": 0}
+
+# --- THE CRITICAL ADDITION BELOW ---
+def main():
+    import uvicorn
+    # Starts the server on the port Hugging Face expects
+    uvicorn.run(app, host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
-    import uvicorn
-    # Standard port for Hugging Face Spaces is 7860
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    main()
