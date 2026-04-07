@@ -12,8 +12,9 @@ dependencies = [
 ]
 
 [project.scripts]
-# Note: Ensure the path 'server.app:main' matches your folder structure
-adaptive-agent = "server.app:main"
+# This line is the 'entry point'. 
+# It MUST point to the 'main' function inside 'server/app.py'
+openenv-participant = "server.app:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
