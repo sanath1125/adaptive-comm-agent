@@ -1,4 +1,5 @@
 import os
+import uvicorn
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
@@ -11,7 +12,6 @@ class Query(BaseModel):
 
 @app.get("/")
 async def root():
-    # Helps you check if the environment variables are active in HF logs
     return {"status": "up", "proxy_detected": "API_BASE_URL" in os.environ}
 
 @app.post("/reset")
@@ -20,39 +20,38 @@ async def reset():
 
 @app.post("/process")
 async def process(query: Query):
-    # Fetching variables INSIDE the function to catch the validator's injection
+    # Fetch variables inside the function to ensure they are captured from the validator
     base_url = os.environ.get("API_BASE_URL")
     api_key = os.environ.get("API_KEY")
 
     if not base_url or not api_key:
         return {"action": 0}
 
-    # Standardizing the URL for the OpenAI Client
+    # Ensure URL formatting for OpenAI Client
     if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
         base_url = base_url.rstrip("/") + "/v1"
 
     try:
-        # Initialize client per-request to ensure the proxy 'handshake' is fresh
         client = OpenAI(base_url=base_url, api_key=api_key)
-
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a communication filter. Reply with 1 for slang/foreign language, 0 for formal English."},
+                {"role": "system", "content": "Reply 1 for slang/foreign language, 0 for formal English."},
                 {"role": "user", "content": query.text}
             ],
             max_tokens=2,
             temperature=0
         )
-        
         content = response.choices[0].message.content.strip()
-        action = 1 if "1" in content else 0
-        return {"action": action}
-
-    except Exception as e:
-        print(f"Proxy Error: {e}")
+        return {"action": 1 if "1" in content else 0}
+    except Exception:
+        # Minimal fallback
         return {"action": 0}
 
+# REQUIRED: The validator needs a callable main() function
+def main():
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
+
+# REQUIRED: The validator needs this entry point
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=7860)
+    main()
