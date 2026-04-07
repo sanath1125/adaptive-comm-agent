@@ -10,14 +10,23 @@ class Query(BaseModel):
     text: str
     task_id: str
 
+@app.get("/")
+async def root():
+    return {"status": "up"}
+
+@app.post("/reset")
+async def reset():
+    return {"status": "success"}
+
 @app.post("/process")
 async def process(query: Query):
     base_url = os.environ.get("API_BASE_URL")
     api_key = os.environ.get("API_KEY")
+    
     if not base_url or not api_key:
         return {"action": 0}
-    
-    # Standardize URL
+
+    # Normalize the base_url for the OpenAI client
     if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
         base_url = base_url.rstrip("/") + "/v1"
 
@@ -30,20 +39,12 @@ async def process(query: Query):
         )
         content = response.choices[0].message.content.strip()
         return {"action": 1 if "1" in content else 0}
-    except:
+    except Exception:
         return {"action": 0}
 
-@app.post("/reset")
-async def reset():
-    return {"status": "success"}
-
-@app.get("/")
-async def root():
-    return {"status": "up"}
-
-# THE ENTRY POINT
+# THE REQUIRED ENTRY POINT
 def main():
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
 
 if __name__ == "__main__":
     main()
