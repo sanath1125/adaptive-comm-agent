@@ -1,7 +1,6 @@
 [project]
 name = "adaptive-comm-agent"
 version = "0.1.0"
-description = "Adaptive Communication Agent for Meta OpenEnv Hackathon"
 dependencies = [
     "fastapi",
     "uvicorn",
@@ -12,7 +11,6 @@ dependencies = [
 ]
 
 [project.scripts]
-# This line is exactly what Phase 1 is looking for
 openenv-participant = "server.app:main"
 
 [build-system]
