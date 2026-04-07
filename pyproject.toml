@@ -12,8 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-# This line is the 'entry point'. 
-# It MUST point to the 'main' function inside 'server/app.py'
+# This MUST point to the main function in server/app.py
 openenv-participant = "server.app:main"
 
 [build-system]
