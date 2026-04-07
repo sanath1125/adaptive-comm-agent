@@ -20,14 +20,12 @@ async def reset():
 
 @app.post("/process")
 async def process(query: Query):
-    # Fetch variables inside the function to ensure they are captured from the validator
     base_url = os.environ.get("API_BASE_URL")
     api_key = os.environ.get("API_KEY")
 
     if not base_url or not api_key:
         return {"action": 0}
 
-    # Ensure URL formatting for OpenAI Client
     if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
         base_url = base_url.rstrip("/") + "/v1"
 
@@ -45,17 +43,13 @@ async def process(query: Query):
         content = response.choices[0].message.content.strip()
         return {"action": 1 if "1" in content else 0}
     except Exception:
-        # Minimal fallback
         return {"action": 0}
 
-# REQUIRED: The validator needs a callable main() function
-# ... (rest of your code above)
-
+# THE VALIDATOR LOOKS FOR THIS SPECIFIC FUNCTION
 def main():
     import uvicorn
-    # This must be on its own line, indented
     uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
 
-# This MUST be at the very start of the line (no spaces)
+# THIS MUST BE ON ITS OWN LINE AT THE VERY BOTTOM
 if __name__ == "__main__":
     main()
