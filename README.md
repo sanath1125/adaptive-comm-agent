@@ -6,26 +6,36 @@ colorTo: green
 sdk: docker
 app_port: 7860
 ---
-# Adaptive Communication AI Agent 🤖
+# 🤖 Adaptive Comm Agent (OpenEnv)
+### A Context-Aware Communication Layer for Global Accessibility
 
-This project is a submission for **Round 1**. It features an AI Agent capable of dynamically switching communication styles based on user input.
+## 🌟 The Vision
+The **Adaptive Comm Agent** is not just a translator; it is an intelligent "Communication Layer" designed to bridge the digital gap for those often left behind by rapid tech evolution. While modern apps are powerful, they are often filled with technical jargon, cultural slang, and linguistic friction that alienates **the elderly**, **immigrants**, and **global travelers**.
 
-## 🚀 Overview
-The system consists of a **Brain (Agent)** and a **Judge (Environment)**:
-- **Agent:** Powered by `Llama-3.1-8B-Instruct` via the Hugging Face Inference Router.
-- **Environment:** A FastAPI-based server that evaluates the Agent's decisions.
+Our agent functions as a frictionless filter that sits between incoming messages and the user, automatically deciding when to intervene to simplify, translate, or decode informal communication.
 
-## 🧠 Decision Logic
-The Agent classifies incoming messages into two categories:
-1. **Action 0 (Standard):** Formal or standard English communication.
-2. **Action 1 (Adaptive):** Foreign languages (e.g., Spanish) or modern Slang (e.g., "no cap", "mid").
+## 🌍 Key Use Cases
+* **The Elderly (Grandparents/Uncles):** Simplifies complex UI terms and translates technical jargon into plain language.
+* **Immigrants & Newcomers:** Acts as a cultural liaison by decoding local slang (e.g., "Gen-Z" slang or regional dialects) that standard translators miss.
+* **Global Travelers:** Provides a "Safety Layer" by ensuring critical informal communications are understood fluently without having to switch between multiple apps.
 
-## 🛠️ Technical Stack
-- **Language:** Python 3.11
-- **Framework:** FastAPI / Uvicorn
-- **AI Model:** Meta Llama 3.1 8B
-- **Deployment:** Dockerized container on Hugging Face Spaces
+## 🛠️ How It Works (The RL Environment)
+Built on **Meta's OpenEnv**, this project simulates a real-world decision-making process:
+1. **Observation:** The agent receives a text string (Observation Space).
+2. **Analysis:** It identifies the context (Formal English, Spanish, or Informal Slang).
+3. **Action:**
+   - **Action 0 (Pass):** No intervention needed for clear, formal text.
+   - **Action 1 (Intervene):** The agent triggers a translation or interpretation layer.
+4. **Reward:** The agent is rewarded for correct interventions that reduce user friction.
 
-## ✅ Evaluation Results
-- **Local Test Score:** 3.0/3.0
-- **Test Cases:** Formal English (Pass), Spanish (Pass), Gen-Z Slang (Pass).
+## 🚀 Technical Implementation
+- **Framework:** OpenEnv (Meta PyTorch)
+- **Backend:** FastAPI / Uvicorn
+- **Deployment:** Dockerized on Hugging Face Spaces
+- **Architecture:** Root-level configuration for "Multi-mode" deployment compatibility.
+
+## 📂 Project Structure
+- `server/`: Core application logic and requirements.
+- `inference.py`: Automated validation script with [START]/[STEP]/[END] logging.
+- `openenv.yaml`: Task definitions and environment constraints.
+- `pyproject.toml`: Project metadata and entry point mapping.
