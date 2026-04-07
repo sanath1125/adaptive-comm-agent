@@ -1,25 +1,19 @@
-[build-system]
-requires = ["setuptools>=45", "wheel"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "openenv-adaptive_comm_agent"
+name = "adaptive-comm-agent"
 version = "0.1.0"
-description = "Adaptive Comm Agent environment for OpenEnv"
-requires-python = ">=3.10"
+description = "Adaptive Communication Agent for Meta OpenEnv Hackathon"
 dependencies = [
-    "openenv-core[core]>=0.2.2",
     "fastapi",
     "uvicorn",
-    "requests",
-    "huggingface_hub",
-    "python-dotenv",
+    "openai",
+    "pydantic",
+    "requests"
 ]
 
 [project.scripts]
-# This line maps the 'server' command to the main() function in app.py
-server = "server.app:main"
+# This maps the command to the main function in your app.py
+adaptive-agent = "server.app:main"
 
-[tool.setuptools]
-package-dir = { "" = "." }
-packages = ["server"]
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
