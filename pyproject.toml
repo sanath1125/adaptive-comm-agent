@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-# This points exactly to the main function in server/app.py
+# This line is exactly what Phase 1 is looking for
 openenv-participant = "server.app:main"
 
 [build-system]
