@@ -49,9 +49,13 @@ async def process(query: Query):
         return {"action": 0}
 
 # REQUIRED: The validator needs a callable main() function
+# ... (rest of your code above)
+
 def main():
+    import uvicorn
+    # This must be on its own line, indented
     uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
 
-# REQUIRED: The validator needs this entry point
+# This MUST be at the very start of the line (no spaces)
 if __name__ == "__main__":
     main()
