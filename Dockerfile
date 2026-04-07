@@ -2,14 +2,14 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Copy everything
+# Copy all files
 COPY . .
 
-# Install dependencies from the server folder
+# Install dependencies
 RUN pip install --no-cache-dir -r server/requirements.txt
 
-# Expose the Hugging Face port
+# Open the port
 EXPOSE 7860
 
-# Run the app using the module syntax to ensure main() is found
+# Run using the module path to satisfy the entry point check
 CMD ["python", "-m", "server.app"]
