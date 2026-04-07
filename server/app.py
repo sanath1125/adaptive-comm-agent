@@ -5,8 +5,8 @@ from openai import OpenAI
 
 app = FastAPI()
 
-# 1. Initialize the Client using the Proxy variables
-# These are automatically provided by the Scaler validator
+# MANDATORY: Use the environment variables injected by the Scaler validator
+# Do not hardcode a real API key here.
 client = OpenAI(
     base_url=os.environ.get("API_BASE_URL"),
     api_key=os.environ.get("API_KEY")
@@ -18,7 +18,7 @@ class Query(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"status": "up", "message": "Adaptive Comm Agent (LLM-Powered) is running"}
+    return {"status": "up", "message": "Adaptive Comm Agent (Proxy-Ready) is running"}
 
 @app.post("/reset")
 async def reset():
@@ -27,28 +27,28 @@ async def reset():
 @app.post("/process")
 async def process(query: Query):
     """
-    Using the LiteLLM Proxy to decide the action.
+    CRITICAL: This function must make an API call to the proxy 
+    to satisfy the 'LiteLLM key' check.
     """
     try:
-        # 2. Make the API call through the proxy
+        # This call 'pings' their proxy so the 'last_active' timer updates
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo", # Use the model name suggested in your dashboard
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a communication layer. Respond with '0' if the text is clear formal English. Respond with '1' if it is a foreign language, slang, or needs interpretation."},
+                {"role": "system", "content": "Respond with 1 if text is slang or foreign, 0 if formal English."},
                 {"role": "user", "content": query.text}
             ],
             max_tokens=5
         )
         
-        # 3. Parse the LLM's decision
+        # Get the decision from the LLM
         answer = response.choices[0].message.content.strip()
         action = 1 if "1" in answer else 0
-        
         return {"action": action}
         
     except Exception as e:
-        print(f"LLM Proxy Error: {e}")
-        # Fallback to your manual logic if the proxy fails
+        # Fallback only if the proxy is down
+        print(f"Proxy Error: {e}")
         text = query.text.lower()
         if any(word in text for word in ["hola", "cap", "fr"]):
             return {"action": 1}
