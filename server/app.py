@@ -26,7 +26,6 @@ async def process(query: Query):
     if not base_url or not api_key:
         return {"action": 0}
 
-    # Standardize the URL
     if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
         base_url = base_url.rstrip("/") + "/v1"
 
@@ -46,7 +45,7 @@ async def process(query: Query):
     except Exception:
         return {"action": 0}
 
-# THE VALIDATOR NEEDS THIS EXACT FUNCTION NAME
+# This is the 'main' function called by project.scripts
 def main():
     uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
 
