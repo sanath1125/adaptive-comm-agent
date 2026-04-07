@@ -1,6 +1,5 @@
 fastapi
 uvicorn
-requests
 pydantic
-huggingface_hub
-python-dotenv
+openai
+requests
