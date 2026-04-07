@@ -7,11 +7,12 @@ dependencies = [
     "uvicorn",
     "openai",
     "pydantic",
-    "requests"
+    "requests",
+    "openenv-core>=0.2.0"
 ]
 
 [project.scripts]
-# This maps the command to the main function in your app.py
+# Note: Ensure the path 'server.app:main' matches your folder structure
 adaptive-agent = "server.app:main"
 
 [build-system]
