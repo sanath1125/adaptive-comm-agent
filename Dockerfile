@@ -1,17 +1,15 @@
-# Use a lightweight Python image
 FROM python:3.10-slim
 
-# Set the working directory
 WORKDIR /app
 
-# Copy all files into the container
+# Copy everything
 COPY . .
 
-# Install dependencies
+# Install dependencies from the server folder
 RUN pip install --no-cache-dir -r server/requirements.txt
 
-# Open the port Hugging Face expects
+# Expose the Hugging Face port
 EXPOSE 7860
 
-# Run the application
-CMD ["python", "server/app.py"]
+# Run the app using the module syntax to ensure main() is found
+CMD ["python", "-m", "server.app"]
