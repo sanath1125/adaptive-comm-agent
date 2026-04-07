@@ -10,22 +10,14 @@ class Query(BaseModel):
     text: str
     task_id: str
 
-@app.get("/")
-async def root():
-    return {"status": "up", "proxy": "API_BASE_URL" in os.environ}
-
-@app.post("/reset")
-async def reset():
-    return {"status": "success"}
-
 @app.post("/process")
 async def process(query: Query):
     base_url = os.environ.get("API_BASE_URL")
     api_key = os.environ.get("API_KEY")
-
     if not base_url or not api_key:
         return {"action": 0}
-
+    
+    # Standardize URL
     if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
         base_url = base_url.rstrip("/") + "/v1"
 
@@ -33,21 +25,25 @@ async def process(query: Query):
         client = OpenAI(base_url=base_url, api_key=api_key)
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Reply 1 for slang/foreign language, 0 for formal English."},
-                {"role": "user", "content": query.text}
-            ],
-            max_tokens=2,
-            temperature=0
+            messages=[{"role": "user", "content": f"Reply 1 if slang/informal, 0 if formal: {query.text}"}],
+            max_tokens=2
         )
         content = response.choices[0].message.content.strip()
         return {"action": 1 if "1" in content else 0}
-    except Exception:
+    except:
         return {"action": 0}
 
-# This is the 'main' function called by project.scripts
+@app.post("/reset")
+async def reset():
+    return {"status": "success"}
+
+@app.get("/")
+async def root():
+    return {"status": "up"}
+
+# THE ENTRY POINT
 def main():
-    uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
     main()
