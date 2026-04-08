@@ -1,13 +1,13 @@
 import os
+import time
 from openai import OpenAI
 
-# 1. Setup - We use the proxy URL as the default to avoid the 401 error
+# 1. Setup - Using the proxy URL
 API_BASE_URL = os.getenv("API_BASE_URL", "https://proxy.openenv.ai/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 if HF_TOKEN is None:
-    # We raise an error so it doesn't print extra text to stdout
     raise ValueError("HF_TOKEN environment variable is required")
 
 # 2. Initialize Client
@@ -20,37 +20,43 @@ def main():
     success = False
     rewards = []
     
-    # The [START] tag must be the very first thing printed
+    # [START] must be the very first line printed
     print(f"[START] task=validation env=openenv model={MODEL_NAME}", flush=True)
 
-    try:
-        response = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[{"role": "user", "content": "Reply 1 for slang, 0 for formal: 'No cap'"}],
-            timeout=30.0
-        )
+    # Retry loop to beat the "Connection Error"
+    for attempt in range(5):
+        try:
+            response = client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=[{"role": "user", "content": "Reply 1 for slang, 0 for formal: 'No cap'"}],
+                timeout=30.0
+            )
 
-        action = response.choices[0].message.content.strip()
-        rewards.append(1.00)
-        
-        # The [STEP] tag
-        print(f"[STEP] step=1 action={action} reward=1.00 done=true error=null", flush=True)
-        success = True
+            action = response.choices[0].message.content.strip()
+            rewards.append(1.00)
+            
+            # Successful step
+            print(f"[STEP] step=1 action={action} reward=1.00 done=true error=null", flush=True)
+            success = True
+            break  # Exit loop if we succeed!
 
-    except Exception as e:
-        rewards.append(0.00)
-        # Detailed error logging helps you see why it failed
-        print(f"[STEP] step=1 action=error reward=0.00 done=true error={str(e)}", flush=True)
+        except Exception as e:
+            if attempt < 4:
+                # Log the retry but don't print anything that looks like a [STEP] or [END] tag yet
+                print(f"Attempt {attempt + 1} failed (Connection Error). Retrying in 10 seconds...", flush=True)
+                time.sleep(10)
+            else:
+                # Final attempt failed
+                rewards.append(0.00)
+                print(f"[STEP] step=1 action=error reward=0.00 done=true error={str(e)}", flush=True)
 
     finally:
-        # The [END] tag
+        # [END] tag
         rewards_str = ",".join(f"{r:.2f}" for r in rewards)
         print(f"[END] success={str(success).lower()} steps={len(rewards)} rewards={rewards_str}", flush=True)
 
-import time
-
 if __name__ == "__main__":
     main()
-    # Keep the container alive for 30 minutes so the validator can finish
+    # 3. Stay Alive - Keeps HF "Running" so Scaler can pull the logs
     print("Inference complete. Keeping container alive for validator...", flush=True)
     time.sleep(1800)
