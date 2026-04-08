@@ -12,7 +12,8 @@ class Query(BaseModel):
 
 @app.get("/")
 async def root():
-    return {"status": "up"}
+    # Diagnostic check for the proxy variables
+    return {"status": "active", "proxy": os.environ.get("API_BASE_URL") is not None}
 
 @app.post("/reset")
 async def reset():
@@ -20,29 +21,40 @@ async def reset():
 
 @app.post("/process")
 async def process(query: Query):
-    base_url = os.environ.get("API_BASE_URL")
+    # FORCE read environment variables inside the request
+    # This prevents the 'Bypass' error if the validator injects them late
+    api_url = os.environ.get("API_BASE_URL")
     api_key = os.environ.get("API_KEY")
-    
-    if not base_url or not api_key:
+
+    if not api_url or not api_key:
         return {"action": 0}
 
-    # Normalize the base_url for the OpenAI client
-    if not base_url.endswith("/v1") and "huggingface.co" not in base_url:
-        base_url = base_url.rstrip("/") + "/v1"
+    # Standardize the URL for the LiteLLM proxy
+    if not api_url.endswith("/v1") and "huggingface.co" not in api_url:
+        api_url = api_url.rstrip("/") + "/v1"
 
     try:
-        client = OpenAI(base_url=base_url, api_key=api_key)
+        # Initialize client INSIDE the process call
+        client = OpenAI(base_url=api_url, api_key=api_key)
+        
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": f"Reply 1 if slang/informal, 0 if formal: {query.text}"}],
-            max_tokens=2
+            messages=[
+                {"role": "system", "content": "You are a classifier. Respond ONLY with 1 for slang/informal or 0 for formal English."},
+                {"role": "user", "content": query.text}
+            ],
+            max_tokens=2,
+            temperature=0
         )
-        content = response.choices[0].message.content.strip()
-        return {"action": 1 if "1" in content else 0}
-    except Exception:
+        
+        result = response.choices[0].message.content.strip()
+        # Return 1 if the LLM says 1, else 0
+        return {"action": 1 if "1" in result else 0}
+
+    except Exception as e:
+        print(f"Proxy Error: {e}")
         return {"action": 0}
 
-# THE REQUIRED ENTRY POINT
 def main():
     uvicorn.run("server.app:app", host="0.0.0.0", port=7860, reload=False)
 
