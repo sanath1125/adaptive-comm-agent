@@ -1,19 +1,22 @@
 FROM python:3.10-slim
 
-# Set working directory
+# 1. Set working directory
 WORKDIR /app
 
-# Copy all files
+# 2. Install essential system dependencies (prevents many connection errors)
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# 3. Copy files
 COPY . .
 
-# Install dependencies from your server requirements
+# 4. Install dependencies
 RUN pip install --no-cache-dir -r server/requirements.txt
-
-# Install your local package in editable mode as requested
 RUN pip install -e .
 
-# REQUIRED: The port for Hugging Face Spaces communication
+# 5. REQUIRED: Hugging Face default port
 EXPOSE 7860
 
-# Run the inference script
+# 6. Run the script
 CMD ["python", "inference.py"]
