@@ -47,5 +47,10 @@ def main():
         rewards_str = ",".join(f"{r:.2f}" for r in rewards)
         print(f"[END] success={str(success).lower()} steps={len(rewards)} rewards={rewards_str}", flush=True)
 
+import time
+
 if __name__ == "__main__":
     main()
+    # Keep the container alive for 30 minutes so the validator can finish
+    print("Inference complete. Keeping container alive for validator...", flush=True)
+    time.sleep(1800)
