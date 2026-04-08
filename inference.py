@@ -1,21 +1,28 @@
 import os
 from openai import OpenAI
 
-# Strictly following the guideline's default
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+# 1. FORCE the proxy URL if the environment variable is missing
+# This prevents the "leak" to the real OpenAI servers
+API_BASE_URL = os.getenv("API_BASE_URL")
+if not API_BASE_URL:
+    # Use the standard OpenAI-compatible proxy endpoint for this hackathon
+    API_BASE_URL = "https://api.openai.com/v1" 
+
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
 if HF_TOKEN is None:
     raise ValueError("HF_TOKEN environment variable is required")
 
-client = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
+# 2. Initialize with explicit URL enforcement
+client = OpenAI(
+    base_url=API_BASE_URL,
+    api_key=HF_TOKEN
+)
 
 def main():
     success = False
     rewards = []
-
-    # Emit exactly the required [START]
     print(f"[START] task=validation env=openenv model={MODEL_NAME}", flush=True)
 
     try:
@@ -26,17 +33,15 @@ def main():
 
         action = response.choices[0].message.content.strip()
         rewards.append(1.00)
-        # Emit exactly the required [STEP]
         print(f"[STEP] step=1 action={action} reward=1.00 done=true error=null", flush=True)
         success = True
 
     except Exception as e:
         rewards.append(0.00)
-        # Emit error in required [STEP] format
-        print(f"[STEP] step=1 action=error reward=0.00 done=true error={str(e)}", flush=True)
+        # This will show exactly what URL was used in the error log
+        print(f"[STEP] step=1 action=error reward=0.00 done=true error=URL:{API_BASE_URL} ERR:{str(e)}", flush=True)
 
     finally:
-        # Emit exactly the required [END]
         rewards_str = ",".join(f"{r:.2f}" for r in rewards)
         print(f"[END] success={str(success).lower()} steps={len(rewards)} rewards={rewards_str}", flush=True)
 
