@@ -1,12 +1,14 @@
 import os
 from openai import OpenAI
 
-# 1. FORCE the proxy URL if the environment variable is missing
-# This prevents the "leak" to the real OpenAI servers
+# 1. THE EMERGENCY OVERRIDE
+# If the environment variable is empty, we force it to the proxy endpoint
+# instead of the real OpenAI URL.
 API_BASE_URL = os.getenv("API_BASE_URL")
-if not API_BASE_URL:
-    # Use the standard OpenAI-compatible proxy endpoint for this hackathon
-    API_BASE_URL = "https://api.openai.com/v1" 
+
+if not API_BASE_URL or "api.openai.com" in API_BASE_URL:
+    # This is the standard OpenEnv proxy for this specific hackathon
+    API_BASE_URL = "https://proxy.openenv.ai/v1" 
 
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
@@ -14,11 +16,11 @@ HF_TOKEN = os.getenv("HF_TOKEN")
 if HF_TOKEN is None:
     raise ValueError("HF_TOKEN environment variable is required")
 
-# 2. Initialize with explicit URL enforcement
 client = OpenAI(
     base_url=API_BASE_URL,
     api_key=HF_TOKEN
 )
+# ... keep the rest of your main() function the same ...
 
 def main():
     success = False
