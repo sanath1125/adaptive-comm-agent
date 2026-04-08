@@ -1,9 +1,11 @@
 FROM python:3.10-slim
 WORKDIR /app
 COPY . .
+# Install the core requirements
 RUN pip install --no-cache-dir -r server/requirements.txt
-# This ensures the 'server' package is recognized
+# Register the package
 RUN pip install -e .
+# THE PORT REQUIREMENT
 EXPOSE 7860
-# Use the module flag to start
-CMD ["python", "-m", "server.app"]
+# Run the formatted inference script
+CMD ["python", "inference.py"]
