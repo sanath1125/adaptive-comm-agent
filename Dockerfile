@@ -1,11 +1,19 @@
 FROM python:3.10-slim
+
+# Set working directory
 WORKDIR /app
+
+# Copy all files
 COPY . .
-# Install the core requirements
+
+# Install dependencies from your server requirements
 RUN pip install --no-cache-dir -r server/requirements.txt
-# Register the package
+
+# Install your local package in editable mode as requested
 RUN pip install -e .
-# THE PORT REQUIREMENT
+
+# REQUIRED: The port for Hugging Face Spaces communication
 EXPOSE 7860
-# Run the formatted inference script
+
+# Run the inference script
 CMD ["python", "inference.py"]
