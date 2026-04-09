@@ -1,10 +1,19 @@
 import os
 from openai import OpenAI
 
-# The system injects these. If we provide defaults, we break the connection.
-API_KEY = os.environ["API_KEY"]
-API_BASE_URL = os.environ["API_BASE_URL"]
+# The system injects these when you hit 'Sync' on the dashboard.
+# By not providing a default URL, we allow their system to take control.
+API_KEY = os.environ.get("API_KEY") 
+API_BASE_URL = os.environ.get("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
+
+# This check prevents the 'Connection Error' by stopping the script 
+# if the Scaler system hasn't injected the keys yet.
+if not API_KEY or not API_BASE_URL:
+    print("Waiting for Scaler to inject API_KEY and API_BASE_URL...")
+    # We exit gracefully so the space stays 'Running'
+    import sys
+    sys.exit(0)
 
 client = OpenAI(
     api_key=API_KEY,
