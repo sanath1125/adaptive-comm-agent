@@ -4,7 +4,7 @@ import httpx
 from openai import OpenAI
 
 # Hardcoded settings for stability
-API_BASE_URL = "https://proxy.openenv.ai/v1"
+API_BASE_URL = "https://proxy.openenv.ai/v1/"
 MODEL_NAME = "gpt-4.1-mini"
 HF_TOKEN = os.getenv("HF_TOKEN")
 
