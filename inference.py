@@ -3,7 +3,7 @@ import time
 from openai import OpenAI
 
 # 1. Setup - Ensuring we use the correct Scaler Proxy
-API_BASE_URL = os.getenv("API_BASE_URL", "https://proxy.openenv.ai/v1")
+API_BASE_URL = "https://proxy.openenv.ai/v1"
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
