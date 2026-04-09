@@ -1,22 +1,19 @@
 import os
 from openai import OpenAI
 
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+# The system injects these. If we provide defaults, we break the connection.
+API_KEY = os.environ["API_KEY"]
+API_BASE_URL = os.environ["API_BASE_URL"]
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4.1-mini")
-HF_TOKEN = os.getenv("HF_TOKEN")
-
-if HF_TOKEN is None:
-    raise ValueError("HF_TOKEN environment variable is required")
 
 client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN
+    api_key=API_KEY,
+    base_url=API_BASE_URL
 )
 
 def main():
     success = False
     rewards = []
-
     print(f"[START] task=validation env=openenv model={MODEL_NAME}", flush=True)
 
     try:
