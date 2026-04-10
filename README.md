@@ -1,9 +1,10 @@
 ---
-title: Adaptive Comm Agent
-emoji: 🤖
+title: Scaler OpenEnv Submission
+emoji: 🚀
 colorFrom: blue
 colorTo: green
 sdk: docker
+pinned: false
 app_port: 7860
 ---
 # 🤖 Adaptive Comm Agent (OpenEnv)
